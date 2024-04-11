@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Invoice</title>
+    <link href="assets/css/main.css" rel="stylesheet" />
+</head>
+
+<body>
+    <form class="form" id="addInvoiceForm">
+        <div class="container">
+            <div class="heading">
+                Create new invoice
+            </div>
+
+            <div class="form-group form-group-margin">
+                <label for="clientDropdown">Client name:</label>
+                <input type="hidden" name="clientId" id="clientId" value="0">
+                <div class="client-dropdown" id="clientDropdown" name="clientDropdown">
+                    <div class="client-dropdown-button" onclick="toggleDropdown()">
+                        <div id="selectedClientName" class="selected-client-name">Select client</div>
+                        <div class="dropdown-image" id="dropdownImage"></div>
+                    </div>
+
+                    <div id="dropdownContent" class="dropdown-content">
+                        <div class="wrapper" id="wrapper">
+                            <input type="text" placeholder="Search clients" class="search-clients" id="searchClients" onkeyup="filterClients()">
+
+                            <div id="clientDropdownInner" class="items">
+
+                            </div>
+
+                            <div class="button add" onclick="newClient()">
+                                New Client
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <label for="invoiceNumber">Invoice number:</label>
+                <input type="number" id="invoiceNumber" name="invoiceNumber" required min="1">
+            </div>
+
+            <div class="line-items-heading">
+                Invoice Items
+            </div>
+            <div class="line-items" id="lineItems">
+                <div class="header-row">
+                    <div class="header-item">Description</div>
+                    <div class="header-item">Taxed</div>
+                    <div class="header-item">Amount</div>
+                    <div class="header-item"></div>
+                </div>
+                <div class="line-item-row" id="line1">
+                    <input type="hidden" name="itemId[]" id="itemId1" value="0">
+                    <input type="hidden" name="taxed[]" id="taxed1" value="0">
+                    <div class="line-item-column line-input">
+                        <input type="text" id="name1" autocomplete="off" name="name[]" onclick="openItemList(1)" onkeyup="searchItemList(1)" onblur="hideItemList(1)" required>
+                        <div id="itemList1" class="items-inv">
+
+                        </div>
+                    </div>
+                    <div class="line-item-column line-input">
+                        <input id="checked1" class="line-input" onchange="updateCheckbox(1)" type="checkbox" value="0" name="checked[]">
+                    </div>
+                    <div class="line-item-column line-input">
+                        <input id="amount1" class="line-input" type="number" name="amount[]" step=".01" onchange="doCalculations()" required min="0" max="1000000">
+                    </div>
+                    <div class="line-item-column delete-column">
+                        <img class="delete-icon" src="assets/images/delete.svg" onclick="deleteRow(1)">
+                    </div>
+                </div>
+            </div>
+
+            <div class="button add" onclick="addRow()">
+                Add row
+            </div>
+
+            <div class="invoice-totals">
+                <div class="invoice-totals-heading">
+                    Invoice Totals
+                </div>
+                <div class="form-group">
+                    <label for="subtotal">Subtotal:</label>
+                    <input type="number" id="subtotal" name="subtotal" disabled value="0">
+                </div>
+    
+                <div class="form-group">
+                    <label for="taxable">Taxable:</label>
+                    <input type="number" id="taxable" name="taxable" disabled value="0">
+                </div>
+                
+                <div class="form-group">
+                    <label for="taxRate">Tax Rate:</label>
+                    <input type="number" id="taxRate" name="taxRate" step=".01" value="0" onchange="doCalculations()">
+                </div>
+                
+                <div class="form-group">
+                    <label for="taxDue">Tax Due:</label>
+                    <input type="number" id="taxDue" name="taxDue" disabled value="0">
+                </div>
+    
+                <div class="form-group">
+                    <label for="otherAmount">Other Amount:</label>
+                    <input type="number" id="otherAmount" name="otherAmount" value="0" onchange="doCalculations()">
+                </div>
+                
+                <div class="form-group">
+                    <label for="total">Total:</label>
+                    <input type="number" id="total" name="total" disabled value="0">
+                </div>
+            </div>
+
+            <button type="submit" class="button add">
+                Save invoice
+            </button>
+        </div>
+    </form>
+
+    <div id="newClientModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="heading">
+                    Add new client
+                </div>
+                <span class="close">&times;</span>
+            </div>
+            <form class="modal-form" id="addClientForm">
+                <div class="form-group">
+                    <label for="newClientName">Client Name:</label>
+                    <input type="text" name="newClientName" id="newClientName" required/>
+                </div>
+                <div class="form-group">
+                    <label for="newCompanyName">Company Name:</label>
+                    <input type="text" name="newCompanyName" id="newCompanyName" required/>
+                </div>
+                <div class="form-group">
+                    <label for="newStreetAddress">Street Address:</label>
+                    <input type="text" name="newStreetAddress" id="newStreetAddress" required/>
+                </div>
+                <div class="form-group">
+                    <label for="newCity">City:</label>
+                    <input type="text" name="newCity" id="newCity" required/>
+                </div>
+                <div class="form-group">
+                    <label for="newState">State:</label>
+                    <input type="text" name="newState" id="newState" required/>
+                </div>
+                <div class="form-group">
+                    <label for="newZipCode">Zip:</label>
+                    <input type="number" name="newZipCode" id="newZipCode" minlength="5" maxlength="5" required/>
+                </div>
+                <div class="form-group">
+                    <label for="newPhoneNumber">Phone Number:</label>
+                    <input type="text" name="newPhoneNumber" id="newPhoneNumber" required/>
+                </div>
+
+                <div class="actions">
+                    <button class="button save" type="submit" name="submitClient" id="submitClient">Save and Select
+                        Client</button>
+                    <button class="button cancel" type="button" id="modalCancel" name="modalCancel">Cancel</button>
+                </div>
+
+            </form>
+        </div>
+    </div>
+    <script src="assets/javascript/config.js"></script>
+    <script src="assets/javascript/main.js"></script>
+</body>
+
+</html>
